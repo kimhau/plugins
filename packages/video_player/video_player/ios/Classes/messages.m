@@ -339,8 +339,11 @@ void FLTVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, id<FLTVi
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         FLTPositionMessage *input = [FLTPositionMessage fromMap:message];
         FlutterError *error;
-        [api seekTo:input error:&error];
-        callback(wrapResult(nil, error));
+        [api seekTo:input
+                    completionHandler:^(BOOL finished) {
+                      callback(wrapResult(nil, error));
+                    }
+                                error:&error];
       }];
     } else {
       [channel setMessageHandler:nil];
