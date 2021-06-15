@@ -354,12 +354,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   return FLTCMTimeToMillis([[_player currentItem] duration]);
 }
 
-- (void)seekTo:(int)location completionHandler:(void (^)(BOOL))completionHandler {
-  [_player.currentItem cancelPendingSeeks];
+- (void)seekTo:(int)location {
   [_player seekToTime:CMTimeMake(location, 1000)
-        toleranceBefore:kCMTimeZero
-         toleranceAfter:kCMTimeZero
-      completionHandler:completionHandler];
+      toleranceBefore:kCMTimeZero
+       toleranceAfter:kCMTimeZero];
 }
 
 - (void)setIsLooping:(bool)isLooping {
@@ -591,12 +589,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   return result;
 }
 
-- (void)seekTo:(FLTPositionMessage*)input
-    completionHandler:(void (^)(BOOL))completionHandler
-                error:(FlutterError**)error {
+- (void)seekTo:(FLTPositionMessage*)input error:(FlutterError**)error {
   FLTVideoPlayer* player = _players[input.textureId];
-  [player seekTo:[input.position intValue] completionHandler:completionHandler];
+  [player seekTo:[input.position intValue]];
 }
+
 - (void)pause:(FLTTextureMessage*)input error:(FlutterError**)error {
   FLTVideoPlayer* player = _players[input.textureId];
   [player pause];
