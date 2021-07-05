@@ -5,7 +5,7 @@
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:flutter_plugin_tools/src/common.dart';
+import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/pubspec_check_command.dart';
 import 'package:test/test.dart';
 
@@ -88,8 +88,7 @@ dev_dependencies:
     }
 
     test('passes for a plugin following conventions', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, withSingleExample: true);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true)}
@@ -105,17 +104,16 @@ ${devDependenciesSection()}
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          'Checking plugin...',
-          'Checking plugin/example...',
-          '\nNo pubspec issues found!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin...'),
+          contains('Running for plugin/example...'),
+          contains('No issues found!'),
         ]),
       );
     });
 
     test('passes for a Flutter package following conventions', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, withSingleExample: true);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin')}
@@ -131,10 +129,10 @@ ${flutterSection()}
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          'Checking plugin...',
-          'Checking plugin/example...',
-          '\nNo pubspec issues found!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin...'),
+          contains('Running for plugin/example...'),
+          contains('No issues found!'),
         ]),
       );
     });
@@ -155,16 +153,15 @@ ${dependenciesSection()}
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          'Checking package...',
-          '\nNo pubspec issues found!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for package...'),
+          contains('No issues found!'),
         ]),
       );
     });
 
     test('fails when homepage is included', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, withSingleExample: true);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true, includeHomepage: true)}
@@ -179,13 +176,12 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
     test('fails when repository is missing', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, withSingleExample: true);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true, includeRepository: false)}
@@ -200,13 +196,12 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
     test('fails when homepage is given instead of repository', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, withSingleExample: true);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true, includeHomepage: true, includeRepository: false)}
@@ -221,13 +216,12 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
     test('fails when issue tracker is missing', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, withSingleExample: true);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true, includeIssueTracker: false)}
@@ -242,13 +236,12 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
     test('fails when environment section is out of order', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, withSingleExample: true);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true)}
@@ -263,13 +256,12 @@ ${environmentSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
     test('fails when flutter section is out of order', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, withSingleExample: true);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true)}
@@ -284,13 +276,12 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
     test('fails when dependencies section is out of order', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, withSingleExample: true);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true)}
@@ -305,13 +296,12 @@ ${dependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
     test('fails when devDependencies section is out of order', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, withSingleExample: true);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true)}
@@ -326,7 +316,7 @@ ${dependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
   });
